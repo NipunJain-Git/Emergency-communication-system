@@ -1,4 +1,4 @@
- HEAD
+
 # Emergency-communication-system
 
 # Offline Emergency Communication — Android APK Project
