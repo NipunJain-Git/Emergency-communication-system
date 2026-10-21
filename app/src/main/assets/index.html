@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07182f">
+  <meta name="description" content="Offline emergency communication using ESP32 Bluetooth and LoRa.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <title>Offline Emergency Communication — ESP32</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand-block">
+        <button id="brandIcon" class="brand-icon" aria-label="Emergency Communications home">EC</button>
+        <div>
+          <h1>Offline Emergency</h1>
+          <p>Communication System</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <div class="role-switch" role="group" aria-label="Choose user role">
+          <button data-role="sender" class="role-btn">Sender</button>
+          <button data-role="receiver" class="role-btn">Receiver</button>
+        </div>
+        <div id="connectionPill" class="connection-pill disconnected">
+          <span id="connectionDot" class="pulse"></span>
+          <span id="connectionText">ESP32 Disconnected</span>
+          <i>•</i>
+          <span>LoRa</span>
+        </div>
+        <button id="connectBtn" class="connect-btn">Connect ESP32</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="chatView" class="screen active" aria-labelledby="chatHeading">
+        <div class="screen-head">
+          <div>
+            <p class="eyebrow" id="roleEyebrow">SENDER MODE</p>
+            <h2 id="chatHeading">Emergency Channel</h2>
+            <p class="muted" id="chatSubheading">Send a message or choose an emergency alert.</p>
+          </div>
+          <div class="network-mini">
+            <div><span class="dot green"></span> Network operational</div>
+            <div>78% battery</div>
+          </div>
+        </div>
+
+        <div id="chatCard" class="chat-card">
+          <div class="chat-header">
+            <div class="channel-left">
+              <div class="channel-icon">⌁</div>
+              <div>
+                <strong>Field Link</strong>
+                <span>Sender ↔ Receiver • Offline LoRa communication</span>
+              </div>
+            </div>
+            <div class="hardware-state"><span id="hardwareStateDot"></span><span id="hardwareStateText">Waiting for ESP32</span></div>
+          </div>
+
+          <div id="messages" class="messages" aria-live="polite"></div>
+
+          <div class="reply-hint" id="replyHint">
+            <span>Receiver can reply or add a suggestion at any time.</span>
+          </div>
+
+          <div id="composerArea" class="composer-shell">
+            <div class="composer">
+              <button id="attachBtn" class="attach-btn" aria-label="Attachment">⌕</button>
+              <input id="messageInput" autocomplete="off" maxlength="240" placeholder="Type your message…" aria-label="Type your message">
+              <button id="sendBtn" class="send-btn">Send <span>➤</span></button>
+            </div>
+            <div class="composer-note">Bluetooth → ESP32 → LoRa → other user</div>
+          </div>
+
+          <div id="quickActions" class="quick-panel">
+            <div class="quick-title">Emergency Actions</div>
+            <div class="quick-grid">
+              <button class="quick-action rescue" data-alert="rescue">
+                <span class="quick-icon">✥</span>
+                <span>Rescue</span>
+              </button>
+              <button class="quick-action enemy" data-alert="enemy">
+                <span class="quick-icon">!</span>
+                <span>Enemy Activity</span>
+              </button>
+              <button class="quick-action medical" data-alert="medical">
+                <span class="quick-icon">+</span>
+                <span>Medical Emergency</span>
+              </button>
+              <button class="quick-action disaster" data-alert="disaster">
+                <span class="quick-icon">☁</span>
+                <span>Natural Disaster</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="networkView" class="screen" aria-labelledby="networkHeading">
+        <div class="screen-head">
+          <div>
+            <p class="eyebrow">NETWORK</p>
+            <h2 id="networkHeading">How the Message Travels</h2>
+            <p class="muted">Simple offline communication flow based on the project design.</p>
+          </div>
+        </div>
+        <div class="flow-card">
+          <div class="flow-step"><div class="flow-icon phone">⌕</div><strong>Sender Phone</strong><span>User message</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="flow-icon bt">ᛒ</div><strong>Bluetooth</strong><span>Short-range link</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="flow-icon esp">▣</div><strong>ESP32</strong><span>Receives data</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step highlight"><div class="flow-icon lora">⌁</div><strong>LoRa</strong><span>Long-range transfer</span></div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step"><div class="flow-icon recv">◉</div><strong>Receiver</strong><span>Message displayed</span></div>
+        </div>
+
+        <div class="status-grid">
+          <div class="status-card"><span>Bluetooth</span><strong class="good">Connected</strong><small>Sender device link</small></div>
+          <div class="status-card"><span>LoRa</span><strong class="good">Ready</strong><small>Long-range radio</small></div>
+          <div class="status-card"><span>Internet</span><strong>Not required</strong><small>System works offline</small></div>
+        </div>
+      </section>
+
+      <section id="settingsView" class="screen" aria-labelledby="settingsHeading">
+        <div class="screen-head">
+          <div>
+            <p class="eyebrow">SETTINGS</p>
+            <h2 id="settingsHeading">System Setup</h2>
+            <p class="muted">Only the essentials for the demo.</p>
+          </div>
+        </div>
+        <div class="settings-card">
+          <div class="setting-row">
+            <div><strong>User role</strong><span>Choose which side of the system this device represents.</span></div>
+            <div class="setting-actions">
+              <button data-role="sender" class="small-role">Sender</button>
+              <button data-role="receiver" class="small-role">Receiver</button>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div><strong>Demo mode</strong><span>Use simulated Bluetooth and LoRa states.</span></div>
+            <button id="demoToggle" class="toggle on"><span></span></button>
+          </div>
+          <div class="setting-row">
+            <div><strong>Device</strong><span id="deviceId">EC-SENDER-01</span></div>
+            <strong class="online-text">Ready</strong>
+          </div>
+          <div class="setting-row">
+            <div><strong>Battery</strong><span>Local device estimate</span></div>
+            <strong>78%</strong>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Main navigation">
+      <button data-screen="chat" class="nav-btn active"><span>▣</span>Chat</button>
+      <button data-screen="network" class="nav-btn"><span>⌁</span>Network</button>
+      <button data-screen="settings" class="nav-btn"><span>⚙</span>Settings</button>
+    </nav>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toastRoot" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
